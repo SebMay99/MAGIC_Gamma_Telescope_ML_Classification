@@ -41,6 +41,26 @@ The two classes are:
 | fAlpha | Angle of major axis with vector to origin |
 | fDist | Distance from origin to center of ellipse |
 
+## EDA
+
+### Class Distribution
+
+![Class Balance](figures/eda_class_balance.png)
+
+The dataset is imbalanced — gamma events (~65%) outnumber hadron events (~35%). The training set is oversampled with `RandomOverSampler` to compensate.
+
+### Feature Distributions
+
+![Feature Distributions](figures/eda_feature_distributions.png)
+
+Features like `fAlpha` and `fConc` show clear separation between classes, making them strong candidates for classification. Others like `fDist` overlap heavily, contributing less discriminative signal.
+
+### Correlation Heatmap
+
+![Correlation Heatmap](figures/eda_correlation_heatmap.png)
+
+`fConc` and `fConc1` are highly correlated (as expected — both measure pixel concentration ratios). Most other features are relatively independent.
+
 ## Approach
 
 The dataset is split 60/20/20 into train, validation, and test sets. Features are standardized with `StandardScaler`. The training set is oversampled with `RandomOverSampler` to handle class imbalance before fitting.
@@ -75,11 +95,15 @@ pip install numpy pandas matplotlib scikit-learn imbalanced-learn tensorflow
 
 Download `magic04.data` from the [UCI repository](https://archive.ics.uci.edu/dataset/159/magic+gamma+telescope) and place it in the same directory as the notebook.
 
+Figures are saved automatically to a `figures/` directory when the notebook is run.
+
 ## Results
 
 All models are evaluated on the same held-out test set (3,804 examples). Class `0` = hadron, class `1` = gamma.
 
 ### k-Nearest Neighbors (k=5)
+
+![kNN Confusion Matrix](figures/cm_knn.png)
 
 ```
               precision    recall  f1-score   support
@@ -88,11 +112,11 @@ All models are evaluated on the same held-out test set (3,804 examples). Class `
            1       0.85      0.86      0.85      2468
 
     accuracy                           0.81      3804
-   macro avg       0.79      0.79      0.79      3804
-weighted avg       0.81      0.81      0.81      3804
 ```
 
 ### Naive Bayes (Gaussian)
+
+![Naive Bayes Confusion Matrix](figures/cm_naive_bayes.png)
 
 ```
               precision    recall  f1-score   support
@@ -101,11 +125,11 @@ weighted avg       0.81      0.81      0.81      3804
            1       0.74      0.90      0.81      2468
 
     accuracy                           0.73      3804
-   macro avg       0.72      0.66      0.67      3804
-weighted avg       0.73      0.73      0.71      3804
 ```
 
 ### Logistic Regression
+
+![Logistic Regression Confusion Matrix](figures/cm_logistic_regression.png)
 
 ```
               precision    recall  f1-score   support
@@ -114,11 +138,11 @@ weighted avg       0.73      0.73      0.71      3804
            1       0.84      0.82      0.83      2468
 
     accuracy                           0.78      3804
-   macro avg       0.76      0.77      0.76      3804
-weighted avg       0.79      0.78      0.78      3804
 ```
 
 ### SVM (RBF Kernel)
+
+![SVM Confusion Matrix](figures/cm_svm.png)
 
 ```
               precision    recall  f1-score   support
@@ -127,11 +151,15 @@ weighted avg       0.79      0.78      0.78      3804
            1       0.89      0.90      0.90      2468
 
     accuracy                           0.86      3804
-   macro avg       0.85      0.85      0.85      3804
-weighted avg       0.86      0.86      0.86      3804
 ```
 
 ### Neural Network (best validation loss)
+
+**Training curves for the best configuration:**
+
+![Neural Network Training Curves](figures/nn_best_training_curves.png)
+
+![Neural Network Confusion Matrix](figures/cm_neural_network.png)
 
 ```
               precision    recall  f1-score   support
@@ -140,9 +168,17 @@ weighted avg       0.86      0.86      0.86      3804
            1       0.90      0.90      0.90      2468
 
     accuracy                           0.87      3804
-   macro avg       0.86      0.86      0.86      3804
-weighted avg       0.87      0.87      0.87      3804
 ```
+
+## Model Comparison
+
+### ROC Curves
+
+![ROC Curves](figures/comparison_roc_curves.png)
+
+### Accuracy & F1 Scores
+
+![Model Comparison Bar Chart](figures/comparison_accuracy_f1.png)
 
 ### Summary
 
